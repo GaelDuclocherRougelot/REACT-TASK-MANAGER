@@ -37,7 +37,7 @@ export default function Tables() {
       </div>
       <hr />
       <div className="flex flex-wrap gap-3 w-full h-full">
-        {tables && tables.map((table) => <Table key={table.id} table={table} tables={tables} setTables={setTables}/>)}
+        {tables && tables.map((table) => <Table key={table.id} table={table} tables={tables} setTables={setTables} />)}
       </div>
     </div>
   );

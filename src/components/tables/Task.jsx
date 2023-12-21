@@ -11,7 +11,7 @@ export default function Task({ task = {}, handleDeleteTask, handleEditTask }) {
       <li
         key={task.id}
         draggable="true"
-        className="bg-white w-full p-2 rounded-md overflow-hidden text-ellipsis flex justify-between"
+        className="bg-white w-full p-2 rounded-md overflow-hidden text-ellipsis flex justify-between cursor-pointer"
         onDragStart={(e) => e.dataTransfer.setData("id_task", task.id)}
         onClick={() => setModalIsOpen(true)}
       >

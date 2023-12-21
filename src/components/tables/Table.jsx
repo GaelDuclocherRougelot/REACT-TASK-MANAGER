@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import FormAddTask from "../forms/FormAddTask";
+import FormEditTable from "../forms/FormEditTable";
 import Task from "./Task";
 
 export default function Table({ table, tables, setTables }) {
   const [tasks, setTasks] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
     setTasks(table.tasks || []);
@@ -86,39 +88,61 @@ export default function Table({ table, tables, setTables }) {
       id: task_id,
       content: newTaskContent,
       table_id: table.id,
-    }
+    };
     setTables((prevTables) => {
       return prevTables.map((prevTable) =>
         prevTable.id === table.id
-          ? { ...prevTable, tasks: [...prevTable.tasks.filter((t) => t.id !== task_id), task] }
+          ? {
+              ...prevTable,
+              tasks: [...prevTable.tasks.filter((t) => t.id !== task_id), task],
+            }
           : prevTable
       );
     });
-  }
+  };
+
+  const handleEditTable = (e, newTitle) => {
+    e.preventDefault();
+    setTables((prevTables) => {
+      return prevTables.map((prevTable) =>
+        prevTable.id === table.id ? { ...prevTable, title: newTitle } : prevTable
+      );
+    });
+  };
 
   return (
-    <div
-      className="flex flex-col items-center w-full md:w-[450px] h-full bg-gray-100 p-4"
-      onDrop={handleDrop}
-      onDragOver={(e) => e.preventDefault()}
-    >
-      <div className="flex justify-between items-center w-full">
-        <h2 className="text-xl">{table.title}</h2>
+    <>
+      <FormEditTable
+        handleEditTable={handleEditTable}
+        table={table}
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={setModalIsOpen}
+      />
+      <div
+        className="flex flex-col items-center w-full md:w-[450px] h-full bg-gray-100 p-4"
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+      >
+        <div className="flex justify-between items-center w-full">
+          <h2 onClick={() => setModalIsOpen(true)} className="text-xl cursor-pointer">
+            {table.title}
+          </h2>
+        </div>
+        <ul className="w-full flex flex-col gap-2 mt-4">
+          {tasks &&
+            tasks.map((task) => (
+              <Task
+                key={task.id}
+                task={task}
+                handleDeleteTask={handleDeleteTask}
+                draggable
+                onDragStart={(e) => handleDragStart(e, task.id)}
+                handleEditTask={handleEditTask}
+              />
+            ))}
+        </ul>
+        <FormAddTask handleAddTask={handleAddTask} />
       </div>
-      <ul className="w-full flex flex-col gap-2 mt-4">
-        {tasks &&
-          tasks.map((task) => (
-            <Task
-              key={task.id}
-              task={task}
-              handleDeleteTask={handleDeleteTask}
-              draggable
-              onDragStart={(e) => handleDragStart(e, task.id)}
-              handleEditTask={handleEditTask}
-            />
-          ))}
-      </ul>
-      <FormAddTask handleAddTask={handleAddTask} />
-    </div>
+    </>
   );
 }

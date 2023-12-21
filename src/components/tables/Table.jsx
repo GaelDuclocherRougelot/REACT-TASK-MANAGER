@@ -1,26 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import Task from "./Task";
 import FormAddTask from "../forms/FormAddTask";
+import Task from "./Task";
 
 /* eslint-disable react/prop-types */
-export default function Table({ table }) {
+export default function Table({ table, tables, setTables }) {
   const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    setTasks(table.tasks || []);
+  }, [table.tasks]);
 
   const handleAddTask = (e, setNewTask, newTask) => {
     e.preventDefault();
     const task = {
       id: uuid(),
-      title: newTask,
-      table_id: table.id
+      content: newTask,
+      table_id: table.id,
     };
+
+    // Update the state in tables
+    const updatedTables = tables.map((t) => {
+      if (t.id === table.id) {
+        return { ...t, tasks: [...tasks, task] };
+      }
+      return t;
+    });
+
+    setTables(updatedTables);
+
+    // Update the current component
     setTasks([...tasks, task]);
     setNewTask("");
   };
 
   const handleDeleteTask = (id) => {
-    const tasksCopy = [...tasks];
-    const filteredTasks = tasksCopy.filter((task) => task.id !== id);
+    const filteredTasks = tasks.filter((task) => task.id !== id);
+
+    // Update the state in tables
+    const updatedTables = tables.map((t) => {
+      if (t.id === table.id) {
+        return { ...t, tasks: filteredTasks };
+      }
+      return t;
+    });
+
+    setTables(updatedTables);
     setTasks(filteredTasks);
   };
 

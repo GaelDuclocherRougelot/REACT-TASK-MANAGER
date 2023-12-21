@@ -6,7 +6,7 @@ export default function Task({ task = {}, handleDeleteTask }) {
       key={task.id}
       className="bg-white w-full p-2 rounded-md overflow-hidden text-ellipsis flex justify-between"
     >
-      {task.title}
+      {task.content}
       <button onClick={() => handleDeleteTask(task.id)} className="mr-2">
         <svgs.cross />
       </button>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 import FormAddTable from "../forms/FormAddTable";
 import FormDeleteTable from "../forms/FormDeleteTable";
@@ -7,9 +8,16 @@ import Table from "./Table";
 export default function Tables() {
   const [tables, setTables] = useState([]);
 
+  const isConnected = localStorage.getItem("connected");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    !isConnected ? navigate("/login") : null;
+  }, [isConnected, navigate]);
+
   const handleAddTable = (e, title, setNewTableTitle) => {
     e.preventDefault();
-    const newTable = { id: uuid(), title: title };
+    const newTable = { id: uuid(), title: title, tasks: [] };
     setTables([...tables, newTable]);
     setNewTableTitle("");
   };
@@ -29,9 +37,7 @@ export default function Tables() {
       </div>
       <hr />
       <div className="flex flex-wrap gap-3 w-full h-full">
-        {tables && tables.map((table) => (
-          <Table key={table.id} table={table} />
-        ))}
+        {tables && tables.map((table) => <Table key={table.id} table={table} tables={tables} setTables={setTables}/>)}
       </div>
     </div>
   );
